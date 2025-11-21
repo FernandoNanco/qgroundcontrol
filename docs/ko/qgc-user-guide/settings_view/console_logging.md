@@ -10,15 +10,15 @@ _콘솔_은 _QGroundControl_ 문제를 진단하는 데 유용한 도구입니�
 
 The most commmonly used logging options are listed below.
 
-| 옵션                                                                                  | 설명                                                                                                                |
-| ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `LinkManagerLog`, `MultiVehicleManagerLog`                                          | 디버그 연결 문제                                                                                                         |
+| 옵션                                                                                  | 설명                                                                                |
+| ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `LinkManagerLog`, `MultiVehicleManagerLog`                                          | 디버그 연결 문제                                                                         |
 | `LinkManagerVerboseLog`                                                             | Debug serial ports not being detected. 디버그 직렬 포트 미감지 사용 가능한 직렬 포트의 매우 시끄러운 연속 출력. |
-| `FirmwareUpgradeLog`                                                                | 펌웨어 플래시 문제를 디버그                                                                                                   |
-| `ParameterManagerLog`                                                               | 디버그 매개변수 로드 문제                                                                                                    |
-| `ParameterManagerDebugCacheFailureLog`                                              | 디버그 매개변수 캐시 crc가 누락                                                                                               |
-| `PlanManagerLog`, `MissionManagerLog`, `GeoFenceManagerLog`, `RallyPointManagerLog` | 디버그 계획 업로드/다운로드 문제                                                                                                |
-| `RadioComponentControllerLog`                                                       | 무선 보정 문제를 디버그                                                                                                     |
+| `FirmwareUpgradeLog`                                                                | 펌웨어 플래시 문제를 디버그                                                                   |
+| `ParameterManagerLog`                                                               | 디버그 매개변수 로드 문제                                                                    |
+| `ParameterManagerDebugCacheFailureLog`                                              | 디버그 매개변수 캐시 crc가 누락                                                               |
+| `PlanManagerLog`, `MissionManagerLog`, `GeoFenceManagerLog`, `RallyPointManagerLog` | 디버그 계획 업로드/다운로드 문제                                                                |
+| `RadioComponentControllerLog`                                                       | 무선 보정 문제를 디버그                                                                     |
 
 ## 명령줄 로깅
 

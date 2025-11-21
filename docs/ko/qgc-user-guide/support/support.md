@@ -8,7 +8,7 @@ _QGroundControl_ 사용 방법에 대한 _질문_은 관련 플라이트 스택�
 - [PX4 Pro Flight Stack](http://discuss.px4.io/c/qgroundcontrol/qgroundcontrol-usage)(discuss.px4.io).
 - [ArduPilot Flight Stack](http://discuss.ardupilot.org/c/ground-control-software/qgroundcontrol) (discuss.ardupilot.org).
 
-These forums are also mainly self-help from other QGC community members. The QGC devs themselves monitor them on a very limited basis.
+이 포럼은 또한 _QGroundControl_에 대한 버그, 문제 및 원하는 기능에 대한 토론을 시작하기에 가장 적합합니다. 거기에서 추가 해결을 위하여 GitHub 문제에 정보를 입력할 수 있습니다.
 
 ### 개발자 채팅 {#developer_chat}
 

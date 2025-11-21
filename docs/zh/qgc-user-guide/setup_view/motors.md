@@ -1,39 +1,34 @@
-# 电机设置
+# Motor Setup
 
-电机设置用于测试单个电机/舵机（例如，验证电机是否按正确方向旋转）。
+Motor Setup is used to test individual motors/servos (for example, to verify that motors spin in the correct direction).
 
 :::tip
-这些指示适用于PX4和ArduPilot上的大多数载具类型。
-针对特定飞行器的说明作为子主题提供（例如[电机设置（ArduSub）](../setup_view/motors_ardusub.md)）。
+These instructions apply to PX4 and to most vehicle types on ArduPilot.
+Vehicle-specific instructions are provided as sub-topics (e.g. [Motors Setup (ArduSub)](../setup_view/motors_ardusub.md)).
 :::
 
-![电机测试](../../../assets/setup/Motors.png)
+![Motors Test](../../../assets/setup/Motors.png)
 
-## 测试步骤
+## Test Steps
 
-要测试的电机：
+To test the motors:
 
-1. 卸下所有螺旋桨。
+1. Remove all propellers.
 
    ::: warning
-   在启动电机前，必须取下螺旋桨！
+   You must remove props before activating the motors!
    :::
 
-2. (_PX4-only_) 启用安全开关 - 如果使用该开关的话。
+2. (_PX4-only_) Enable safety switch - if used.
 
-3. 滑动开关以启用电机滑块和按钮（标签为：_已移除螺旋桨 - 启用滑块和电机_）。
+3. Slide the switch to enable motor sliders (labeled: _Propellers are removed - Enable motor sliders_).
 
-4. 调节滑块以选择电机功率。
-
-5. 按下对应的电源按钮，然后确认它朝正确方向旋转。
+4. Adjust the individual sliders to spin the motors and confirm they spin in the correct direction.
 
    ::: info
-   3秒后发动机将自动停止旋转。
-   您也可以按“停止”按钮来阻止发动机。
-   如果没有电机转动，调高 “油门百分比” 后再试。
+   The motors only spin after you release the slider and will automatically stop spinning after 3 seconds.
    :::
 
-## 附加信息
+## Additional Information
 
-- [Basic Configuration > Motor Setup](http://docs.px4.io/main/en/config/motors.html) (_PX4 User Guide_) - This contains additional PX4-specific information.
-- [电调与电机](https://ardupilot.org/copter/docs/connect-escs-and-motors.html#motor-order-diagrams) - 这是所有机架的电机顺序图
+- [Basic Configuration > Motor Setup](http://docs.px4.io/master/en/config/motors.html) (_PX4 User Guide_) - This contains additional PX4-specific information.

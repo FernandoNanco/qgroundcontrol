@@ -3,7 +3,7 @@ import { defineConfig } from "vitepress";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: "QGC Guide",
+  title: "QGC Guide (4.4)",
   description:
     "How to use and develop QGroundControl for PX4 or ArduPilot powered vehicles.",
   ignoreDeadLinks: true, // Do this for stable, where we don't yet have all translations
@@ -87,22 +87,12 @@ export default defineConfig({
             ariaLabel: "QGC website link",
           },
           {
-            text: "Download QGC (stable)",
-            link: "https://docs.qgroundcontrol.com/master/en/qgc-user-guide/getting_started/download_and_install.html",
-            ariaLabel: "Download stable QGC",
-          },
-          {
-            text: "Download QGC (daily build)",
-            link: "https://docs.qgroundcontrol.com/master/en/qgc-user-guide/releases/daily_builds.html",
-            ariaLabel: "Download stable QGC",
-          },
-          {
             text: "Source Code",
             link: "https://github.com/mavlink/qgroundcontrol",
           },
           {
             text: "Docs Source Code",
-            link: "https://github.com/mavlink/qgroundcontrol/tree/master/docs",
+            link: "https://github.com/mavlink/qgroundcontrol/tree/master/doc",
           },
         ],
       },
@@ -149,7 +139,7 @@ export default defineConfig({
       },
       {
         text: "Support",
-        link: "https://docs.qgroundcontrol.com/master/en/qgc-user-guide/support/support.html",
+        link: "https://docs.qgroundcontrol.com/master/en/support/support.html",
       },
       {
         text: "Version",
@@ -159,8 +149,8 @@ export default defineConfig({
             link: "https://docs.qgroundcontrol.com/master/en/",
           },
           {
-            text: "v5.0",
-            link: "https://docs.qgroundcontrol.com/Stable_V5.0/en/",
+            text: "v4.3",
+            link: "https://docs.qgroundcontrol.com/Stable_V4.3/en/",
           },
           {
             text: "v4.4",

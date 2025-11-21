@@ -199,5 +199,5 @@ _차량에 연결_한 상태에서 임무를 계획하고 있다면 차량에 �
 
 ## 추가 정보
 
-- New Plan View features for [QGC release v3.2](../qgc-user-guide/releases/release_note_stable_v3.md#plan_view)
-- New Plan View features for [QGC release v3.3](../qgc-user-guide/releases/release_note_stable_v3.md#plan-view-1)
+- [QGC 릴리스 v3.2](../releases/stable_v3.2_long.md#plan_view)의 새로운 플랜 보기 기능
+- [QGC 릴리스 v3.3](../releases/stable_v3.3_long.md#plan_view)의 새로운 플랜 보기 기능

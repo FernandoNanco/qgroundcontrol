@@ -1,348 +1,246 @@
-# ============================================================================
-# QGroundControl CMake Build Configuration
-# ============================================================================
+cmake_minimum_required(VERSION 3.10)
 
-cmake_minimum_required(VERSION 3.25)
+project(QGroundControl LANGUAGES C CXX)
 
-# ----------------------------------------------------------------------------
-# CMake Module Paths
-# ----------------------------------------------------------------------------
-list(APPEND CMAKE_MODULE_PATH
-    "${CMAKE_SOURCE_DIR}/cmake"
-    "${CMAKE_SOURCE_DIR}/cmake/CPack"
-    "${CMAKE_SOURCE_DIR}/cmake/find-modules"
-    "${CMAKE_SOURCE_DIR}/cmake/install"
-    "${CMAKE_SOURCE_DIR}/cmake/install/CPack"
-    "${CMAKE_SOURCE_DIR}/cmake/modules"
-    "${CMAKE_SOURCE_DIR}/cmake/platform"
-)
-
-# Include helper functions early
-include(Helpers)
-
-# ----------------------------------------------------------------------------
-# Default Build Type
-# ----------------------------------------------------------------------------
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type (Debug or Release)" FORCE)
-    set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Available configuration types" FORCE)
-    message(STATUS "No build type specified. Defaulting to Release.")
-endif()
-
-# ----------------------------------------------------------------------------
-# CMake Policy Configuration
-# ----------------------------------------------------------------------------
-set(CMAKE_REQUIRED_QUIET ON)
-set(CMAKE_POLICY_VERSION_MINIMUM ${CMAKE_MINIMUM_REQUIRED_VERSION})
-
-# ============================================================================
-# Custom Build Configuration
-# ============================================================================
-
-# Load default options and allow custom builds to override
-include(CustomOptions)
-
-if(IS_DIRECTORY "${CMAKE_SOURCE_DIR}/custom")
-    message(STATUS "QGC: Custom build directory detected")
-    set(QGC_CUSTOM_BUILD ON)
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/custom/cmake")
-    include(CustomOverrides)
-endif()
-
-# Disable testing if not explicitly enabled
-if(NOT QGC_BUILD_TESTING)
-    set(BUILD_TESTING OFF CACHE INTERNAL "Disable testing by default" FORCE)
-endif()
-
-# ============================================================================
-# Project Configuration
-# ============================================================================
-
-# ----------------------------------------------------------------------------
-# Apple-Specific Pre-Project Settings
-# ----------------------------------------------------------------------------
-if(APPLE)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "12.0")
-    # iOS builds: set(CMAKE_OSX_SYSROOT "iphoneos")
-    if(QGC_MACOS_UNIVERSAL_BUILD)
-        # Universal binary for both Intel and Apple Silicon
-        set(CMAKE_OSX_ARCHITECTURES "x86_64h;arm64")
-    endif()
-endif()
-
-# ----------------------------------------------------------------------------
-# Git Integration & Version Extraction
-# ----------------------------------------------------------------------------
-include(Git)
-
-# ----------------------------------------------------------------------------
-# Compiler Caching Configuration
-# ----------------------------------------------------------------------------
-if(QGC_USE_CACHE)
-    qgc_config_caching()
-endif()
-
-# ----------------------------------------------------------------------------
-# Project Declaration
-# ----------------------------------------------------------------------------
-project(${QGC_APP_NAME}
-    VERSION ${QGC_APP_VERSION}
-    DESCRIPTION ${QGC_APP_DESCRIPTION}
-    HOMEPAGE_URL "https://${QGC_ORG_DOMAIN}"
-    LANGUAGES C CXX
-)
-
-# ============================================================================
-# CMake & Build System Configuration
-# ============================================================================
-
-# Standard CMake modules
 include(GNUInstallDirs)
-include(FetchContent)
-include(CMakePrintHelpers)
 
-# ----------------------------------------------------------------------------
-# CPM (CMake Package Manager) Configuration
-# ----------------------------------------------------------------------------
-include(CPM)
-if(NOT CPM_SOURCE_CACHE)
-    set(CPM_SOURCE_CACHE "${CMAKE_BINARY_DIR}/cpm_modules")
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release;RelWithDebInfo;MinSizeRel;Coverage")
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+include(FeatureSummary)
+
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        add_compile_options(-Wall -Wextra)
 endif()
 
-# ----------------------------------------------------------------------------
-# Toolchain Configuration (Compiler, Linker, Build Settings)
-# ----------------------------------------------------------------------------
-include(Toolchain)
-
-# ----------------------------------------------------------------------------
-# Output Directories
-# ----------------------------------------------------------------------------
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/lib")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>")
-if(ANDROID)
-    set(CMAKE_PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
-else()
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>")
+# CMake build type
+# Debug Release RelWithDebInfo MinSizeRel Coverage
+if (NOT CMAKE_BUILD_TYPE)
+	# default to release with debug symbols
+	set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Build type" FORCE)
 endif()
 
-# ----------------------------------------------------------------------------
-# CMake Policies
-# ----------------------------------------------------------------------------
-# CMP0168: Modern FetchContent integration
-if(POLICY CMP0168)
-    cmake_policy(SET CMP0168 NEW)
-    set(CMAKE_POLICY_DEFAULT_CMP0168 NEW)
+# Add folder where are supportive functions
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+
+# Configure Qt5 to get necessary variables
+include(Qt5QGCConfiguration)
+message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "Qt version: ${QT_VERSION}")
+message(STATUS "Qt spec: ${QT_MKSPEC}")
+
+set(COMPANY "Mavlink")
+set(COPYRIGHT "Copyright (c) 2018 QGroundControl. All rights reserved.")
+set(IDENTIFIER "io.mavlink.qgroundcontrol")
+
+add_definitions(
+	-DQGC_APPLICATION_NAME="QGroundControl"
+	-DQGC_ORG_NAME="QGroundControl.org"
+	-DQGC_ORG_DOMAIN="org.qgroundcontrol"
+	)
+
+include(Git)
+message(STATUS "QGroundControl version: ${APP_VERSION_STR}")
+
+#=============================================================================
+# ccache
+#
+option(CCACHE "Use ccache if available" ON)
+find_program(CCACHE_PROGRAM ccache)
+if (CCACHE AND CCACHE_PROGRAM AND NOT DEFINED ENV{CCACHE_DISABLE})
+	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
 endif()
 
-# CMP0141: MSVC debug information format
-if(POLICY CMP0141)
-    cmake_policy(SET CMP0141 NEW)
-    set(CMAKE_POLICY_DEFAULT_CMP0141 NEW)
-endif()
+#=============================================================================
+# Compile QML
+#
+option(COMPILE_QML "Pre-compile QML files using the Qt Quick compiler." FALSE)
+add_feature_info(COMPILE_QML COMPILE_QML "Pre-compile QML files using the Qt Quick compiler.")
+if(COMPILE_QML)
+    find_package(Qt5QuickCompiler)
 
-# CMP0075: Include files in CheckIncludeFile
-if(POLICY CMP0075)
-    cmake_policy(SET CMP0075 NEW)
-    set(CMAKE_POLICY_DEFAULT_CMP0075 NEW)
-endif()
-
-# ============================================================================
-# Qt6 Configuration
-# ============================================================================
-
-set(QT_NO_PRIVATE_MODULE_WARNING ON)
-
-find_package(Qt6
-    ${QGC_QT_MINIMUM_VERSION}...${QGC_QT_MAXIMUM_VERSION}
-    REQUIRED
-    COMPONENTS
-        Charts
-        Concurrent
-        Core
-        Core5Compat
-        Gui
-        LinguistTools
-        Location
-        LocationPrivate
-        Multimedia
-        Network
-        Positioning
-        Qml
-        QmlIntegration
-        Quick
-        QuickControls2
-        QuickWidgets
-        Sensors
-        Sql
-        Svg
-        TextToSpeech
-        Widgets
-        Xml
-        StateMachine
-    OPTIONAL_COMPONENTS
-        Bluetooth
-        MultimediaQuickPrivate
-        OpenGL
-        Quick3D
-        SerialPort
-        Test
-)
-
-if(LINUX)
-    find_package(Qt6 COMPONENTS WaylandClient)
-endif()
-
-qt_standard_project_setup(
-    REQUIRES ${QGC_QT_MINIMUM_VERSION}
-    SUPPORTS_UP_TO ${QGC_QT_MAXIMUM_VERSION}
-    I18N_SOURCE_LANGUAGE en
-)
-
-# ----------------------------------------------------------------------------
-# QML Linting Configuration
-# ----------------------------------------------------------------------------
-if(QGC_ENABLE_QMLLINT)
-    set(QT_QML_GENERATE_QMLLINT ON CACHE BOOL "Enable automatic QML linting" FORCE)
-else()
-    set(QT_QML_GENERATE_QMLLINT OFF CACHE BOOL "Disable automatic QML linting" FORCE)
-endif()
-
-# ----------------------------------------------------------------------------
-# Qt Policies (Enable modern Qt6 behaviors)
-# ----------------------------------------------------------------------------
-qt_policy(
-    SET QTP0001 NEW  # Modern resource handling
-    SET QTP0002 NEW  # New behavior for QML module URI
-    SET QTP0003 NEW  # Better QML type registration
-    SET QTP0004 NEW  # Improved translation handling
-    SET QTP0005 NEW  # Enhanced deployment handling
-)
-
-# ============================================================================
-# Custom Build Subdirectory
-# ============================================================================
-
-if(QGC_CUSTOM_BUILD)
-    add_subdirectory(custom)
-endif()
-
-# ============================================================================
-# QGroundControl Resources
-# ============================================================================
-
-# Note: Resources added to executable (not library) to avoid needing Q_INIT_RESOURCE()
-
-list(APPEND QGC_RESOURCES
-    "${CMAKE_SOURCE_DIR}/qgcimages.qrc"
-    "${CMAKE_SOURCE_DIR}/qgcresources.qrc"
-    "${CMAKE_SOURCE_DIR}/resources/InstrumentValueIcons/InstrumentValueIcons.qrc"
-)
-
-# ============================================================================
-# QGroundControl Executable Target
-# ============================================================================
-
-# Create the main executable
-qt_add_executable(${CMAKE_PROJECT_NAME}
-    WIN32          # Windows GUI application
-    MACOSX_BUNDLE  # macOS application bundle
-    ${QGC_RESOURCES}
-)
-
-# ----------------------------------------------------------------------------
-# Platform-Specific Configuration
-# ----------------------------------------------------------------------------
-if(WIN32)
-    include(Windows)
-elseif(APPLE)
-    include(Apple)
-elseif(ANDROID)
-    include(Android)
-elseif(LINUX)
-    include(Linux)
-endif()
-
-# ----------------------------------------------------------------------------
-# QML Module Configuration
-# ----------------------------------------------------------------------------
-qt_add_qml_module(${CMAKE_PROJECT_NAME}
-    URI QGC
-    VERSION 1.0
-    RESOURCE_PREFIX /qml
-    IMPORTS
-        QtQuick
-        QtQuick.Controls
-        QtQuick.Dialogs
-        QtQuick.Layouts
-)
-
-# ----------------------------------------------------------------------------
-# Source & Test Subdirectories
-# ----------------------------------------------------------------------------
-add_subdirectory(src)
-
-if(QGC_BUILD_TESTING)
-    add_subdirectory(test)
-    # Exclude test directory from translation scanning
-    set_property(DIRECTORY test PROPERTY QT_EXCLUDE_FROM_TRANSLATION ON)
-endif()
-
-# ----------------------------------------------------------------------------
-# Translation/Localization Configuration
-# ----------------------------------------------------------------------------
-file(GLOB TS_SOURCES "${CMAKE_SOURCE_DIR}/translations/qgc_*.ts")
-set_source_files_properties(${TS_SOURCES} PROPERTIES OUTPUT_LOCATION "${CMAKE_BINARY_DIR}/i18n")
-
-qt_add_translations(${CMAKE_PROJECT_NAME}
-    TS_FILES ${TS_SOURCES}
-    RESOURCE_PREFIX "/"
-    LUPDATE_OPTIONS -no-obsolete
-    TS_FILE_DIR "${CMAKE_SOURCE_DIR}/translations"
-    TS_FILE_BASE ${CMAKE_PROJECT_NAME}
-    # TS_FILES_OUTPUT_VARIABLE _ts_files_generated
-    # TS_OUTPUT_DIRECTORY "{CMAKE_SOURCE_DIR}/translations"
-    # QM_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/i18n"
-    # MERGE_QT_TRANSLATIONS
-)
-
-# ----------------------------------------------------------------------------
-# Qt Quick Controls Configuration
-# ----------------------------------------------------------------------------
-qgc_set_qt_resource_alias("${CMAKE_SOURCE_DIR}/resources/qtquickcontrols2.conf")
-
-qt_add_resources(${CMAKE_PROJECT_NAME} "qgcresources_cmake"
-    PREFIX "/"
-    FILES "${CMAKE_SOURCE_DIR}/resources/qtquickcontrols2.conf"
-)
-
-# ----------------------------------------------------------------------------
-# Qt Plugin Configuration
-# ----------------------------------------------------------------------------
-qt_import_plugins(${CMAKE_PROJECT_NAME}
-    INCLUDE Qt6::QSvgPlugin
-    EXCLUDE_BY_TYPE geoservices  # Use built-in location plugins
-    INCLUDE_BY_TYPE sqldrivers Qt6::QSQLiteDriverPlugin
-)
-
-# Linux-specific Qt platform plugins
-if(LINUX)
-    qt_import_plugins(${CMAKE_PROJECT_NAME}
-        INCLUDE
-            Qt6::QWaylandIntegrationPlugin      # Wayland support
-            Qt6::QXcbIntegrationPlugin          # X11 support
-            Qt6::QEglFSIntegrationPlugin        # Embedded GL support
-            Qt6::QWaylandEglPlatformIntegrationPlugin
+    set_package_properties(Qt5QuickCompiler PROPERTIES
+        DESCRIPTION "Pre-compile QML files using the Qt Quick compiler."
+        TYPE OPTIONAL
     )
 endif()
 
-# ============================================================================
-# Installation & Packaging
-# ============================================================================
+#=============================================================================
+# Debug QML
+#
+option(DEBUG_QML "Build QGroundControl with QML debugging/profiling support." FALSE)
+add_feature_info(DEBUG_QML DEBUG_QML "Build QGroundControl with QML debugging/profiling support.")
+if(DEBUG_QML)
+    message(STATUS "To enable the QML debugger/profiler, run with: '-qmljsdebugger=port:1234'")
+    add_definitions(-DQMLJSDEBUGGER)
+    add_definitions(-DQT_DECLARATIVE_DEBUG)
+    add_definitions(-DQT_QML_DEBUG)
+endif()
 
-include(Install)
+#=============================================================================
+# GStreamer
+#
+find_package(PkgConfig)
 
-# ============================================================================
-# Build Summary
-# ============================================================================
+set(GST_DEPENDENCIES
+	gstreamer-1.0>=1.14
+	gstreamer-video-1.0>=1.14
+	gstreamer-gl-1.0>=1.14
+	)
 
-include(PrintSummary)
+if (MSVC)
+	pkg_check_modules(GST
+		${GST_DEPENDENCIES}
+		)
+else()
+	pkg_check_modules(GST
+		${GST_DEPENDENCIES}
+		egl
+		)
+endif()
+
+if (GST_FOUND)
+    add_definitions(
+        -DQGC_GST_STREAMING
+    )
+
+    option(QGC_GST_MICROHARD_ENABLED "Enable microhard" OFF)
+    option(QGC_GST_TAISYNC_ENABLED "Enable taisyng" OFF)
+else()
+	if (QGC_GST_MICROHARD_ENABLED OR QGC_GST_TAISYNC_ENABLED)
+		message(FATAL_ERROR "You tried to enable Microhard or Taisync but gstreamer is not found. Make sure to set PKG_CONFIG_EXECUTABLE and/or PKG_CONFIG_PATH properly.")
+	endif()
+endif()
+
+#=============================================================================
+# Qt5
+#
+find_package(Qt5 ${QT_VERSION}
+	COMPONENTS
+		Bluetooth
+		Charts
+		Concurrent
+		Core
+		Location
+		Multimedia
+		Network
+		Positioning
+		Quick
+		QuickControls2
+		QuickWidgets
+		OpenGL
+		Sql
+		Svg
+		Test
+		TextToSpeech
+		Widgets
+		Xml
+	REQUIRED
+	HINTS
+		${QT_LIBRARY_HINTS}
+)
+
+if(NOT QT_MKSPEC MATCHES "winrt")
+	find_package(Qt5 ${QT_VERSION}
+		COMPONENTS
+			SerialPort
+		REQUIRED
+		HINTS
+			${QT_LIBRARY_HINTS}
+	)
+endif()
+
+# Sets the default flags for compilation and linking.
+include(CompileOptions)
+
+include_directories(
+	libs/eigen
+
+	libs/libevents
+
+	libs/mavlink/include/mavlink/v2.0
+	libs/mavlink/include/mavlink/v2.0/all
+	libs/mavlink/include/mavlink/v2.0/common
+
+	libs/shapelib
+)
+
+add_subdirectory(libs)
+add_subdirectory(src)
+
+set(QGC_RESOURCES
+	${CMAKE_CURRENT_SOURCE_DIR}/qgcimages.qrc
+	${CMAKE_CURRENT_SOURCE_DIR}/qgcresources.qrc
+	${CMAKE_CURRENT_SOURCE_DIR}/qgroundcontrol.qrc
+	${CMAKE_CURRENT_SOURCE_DIR}/resources/InstrumentValueIcons/InstrumentValueIcons.qrc
+	${CMAKE_CURRENT_SOURCE_DIR}/src/FirmwarePlugin/APM/APMResources.qrc
+	${CMAKE_CURRENT_SOURCE_DIR}/src/FirmwarePlugin/PX4/PX4Resources.qrc
+	${CMAKE_CURRENT_SOURCE_DIR}/VideoReceiverApp/qml.qrc
+	)
+
+if (WIN32)
+	# append application icon resource for Windows
+	set(QGC_RESOURCES
+		${QGC_RESOURCES}
+		${CMAKE_CURRENT_SOURCE_DIR}/windows/QGroundControl.rc)
+endif()
+
+if(BUILD_TESTING)
+	list(APPEND QGC_RESOURCES
+		UnitTest.qrc
+	)
+endif()
+
+if(ANDROID)
+	add_library(QGroundControl SHARED ${QGC_RESOURCES})
+else()
+	add_executable(QGroundControl ${QGC_RESOURCES})
+endif()
+
+target_link_libraries(QGroundControl PRIVATE qgc)
+
+# Files/directories to install
+install(
+    TARGETS QGroundControl
+    DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+install(
+    DIRECTORY ${CMAKE_SOURCE_DIR}/resources/
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/qgroundcontrol
+)
+install(
+    FILES ${CMAKE_SOURCE_DIR}/deploy/org.mavlink.qgroundcontrol.desktop
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
+)
+install(
+    FILES ${CMAKE_SOURCE_DIR}/resources/icons/qgroundcontrol.png
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps/
+    RENAME org.mavlink.qgroundcontrol.png
+)
+configure_file(
+    ${CMAKE_SOURCE_DIR}/deploy/org.mavlink.qgroundcontrol.metainfo.xml.in
+    ${CMAKE_BINARY_DIR}/metainfo/org.mavlink.qgroundcontrol.metainfo.xml
+    @ONLY
+)
+install(
+    FILES ${CMAKE_BINARY_DIR}/metainfo/org.mavlink.qgroundcontrol.metainfo.xml
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo/
+)
+
+if(BUILD_TESTING)
+        target_link_libraries(QGroundControl PRIVATE Qt5::Test)
+endif()
+
+if(NOT QT_MKSPEC MATCHES "winrt")
+	target_link_libraries(QGroundControl
+		PUBLIC
+			Qt5::SerialPort
+		)
+endif()
+
+include(QGCDeploy)

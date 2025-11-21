@@ -9,11 +9,11 @@
  *   @author Gus Grubba <gus@auterion.com>
  */
 
-import QtQuick
+import QtQuick 2.3
 
-
-import QGroundControl
-import QGroundControl.Controls
+import QGroundControl.Palette       1.0
+import QGroundControl.ScreenTools   1.0
+import QGroundControl.Controls      1.0
 
 Rectangle {
     id:     _root

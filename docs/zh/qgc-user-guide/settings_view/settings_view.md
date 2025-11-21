@@ -1,19 +1,19 @@
-# 设置视图
+# Settings View
 
-_设置视图_ 用于配置 _QGroundControl_ 应用程序 (而不是特定的载具) 的设置。 您无需连接载具就能更改这些值。
+The _Settings View_ is used to configure the settings for the _QGroundControl_ application (rather than a specific vehicle). You do not have to have a vehicle connected to change these values.
 
-您可以通过点击左侧边栏中的按钮来切换各种设置选项。
+You can switch between the various settings options by clicking the buttons in the left-sidebar.
 
 ![](../../../assets/settings/settings_view.jpg)
 
-## 设置选项
+## Settings Options
 
-**[常规](general.md)** <br>主要应用程序配置设置。 用于指定：显示单位、自动连接装置、视频显示和存储、RTK GPS等。
+**[General](general.md)** <br />The main application configuration settings. These are used to specify: display units, autoconnection devices, video display and storage, RTK GPS, etc.
 
-**Comm Links** <br>允许您手动创建通信链接并连接到它们。 _请注意，通常无需这样做，因为QGroundControl会自动连接到最常见的设备。_
+**Comm Links** <br />Allows you to manually create communication links and connect to them. _Keep in mind that normally this is not needed since QGroundControl will automatically connect to the most common devices._
 
-**[离线地图](offline_maps.md)** <br>允许您在没有互联网连接时使用缓存地图。
+**[Offline Maps](offline_maps.md)** <br />Allows you to cache maps for use while you have no Internet connection.
 
-**[MAVLink](mavlink.md)** <br>与 MAVLink 连接到车辆相关联的设置。
+**[MAVLink](mavlink.md)** <br />Settings associated with the MAVLink connection to a vehicle.
 
-**[Console](console_logging.md)** <br>用于捕捉应用程序日志以帮助诊断应用程序问题。
+**[Console](console_logging.md)** <br />Used to capture application logs for help with diagnosing application problems.

@@ -199,7 +199,7 @@ _설문조사_ 프로세스는 기지국 위치의 정확한 추정치를 얻기
 - 지정된 기준 위치 사용
   - **기본 위치 위도:** 고정 RTK 기지국의 위도입니다.
   - **기본 위치 경도:** 고정 RTK 기지국의 경도입니다.
-  - **Base Position Alt (WGS84):** Altitude of fixed RTK base station.
+  - **Base Position Alt(WGS94):** 고정 RTK 기지국의 고도입니다.
   - **기지 위치 정확도:** 기지국 위치 정보의 정확도.
   - **현재 베이스 위치 저장**(버튼): 마지막 Survey-In 작업의 설정을 위의 _지정된 베이스 위치 사용_ 필드에 복사하려면 누릅니다.
 
@@ -236,7 +236,7 @@ _비디오_ 섹션은 _비행 화면_에 표시될 비디오의 소스 및 연�
 
 설정 항목들은 다음과 같습니다:
 
-- **Video Source**: Video Stream Disabled | RTSP Video Stream | UDP h.264 Video Stream | UDP h.265 Video Stream | TCP-MPEG2 Video Stream | MPEG-TS Video Stream | Integrated Camera
+- **비디오 소스**: 비디오 스트림 비활성화됨 | RTSP 비디오 스트림 | UDP h.264 비디오 스트림 | UDP h.265 비디오 스트림 | TCP-MPEG2 비디오 스트림 | MPEG-TS(h.264) 비디오 스트림 | 통합 카메라 > **참고** 비디오 소스가 지정되지 않으면 다른 비디오 또는 _비디오 녹화_ 설정이 표시되지 않습니다(위에서 UDP 소스가 선택되었을 때의 설정을 볼 수 있음).
 
   ::: info
   If no video source is specified then no other video or _video recording_ settings will be displayed (above we see the settings when UDP source is selected).

@@ -9,13 +9,14 @@
  *   @author Gus Grubba <gus@auterion.com>
  */
 
-import QtQuick
-import QtQuick.Controls
+import QtQuick                      2.11
+import QtQuick.Controls             2.4
 
-import QGroundControl
-import QGroundControl.Controls
-
-
+import QGroundControl               1.0
+import QGroundControl.Controls      1.0
+import QGroundControl.Palette       1.0
+import QGroundControl.ScreenTools   1.0
+import QtGraphicalEffects           1.0
 
 Button {
     id:                             _rootButton
@@ -49,7 +50,7 @@ Button {
             mipmap:                 true
             antialiasing:           true
             fillMode:               Image.PreserveAspectFit
-            source:                 qgcPal.globalTheme === QGCPalette.Light ? "/res/QGCLogoBlack.svg" : "/res/QGCLogoWhite.svg"
+            source:                 qgcPal.globalTheme === QGCPalette.Light ? "/res/QGCLogoBlack" : "/res/QGCLogoWhite"
             sourceSize.height:      height
             anchors.left:           _edge.right
             anchors.leftMargin:     ScreenTools.defaultFontPixelWidth

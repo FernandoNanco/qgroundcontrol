@@ -20,7 +20,7 @@ The calibration steps are:
    ![Accelerometer calibration](../../../assets/setup/sensor/accelerometer_ardupilot.jpg)
 
    ::: info
-   您应该已经设置了上述的[飞控方向](#flight_controller_orientation) 。
+   You should already have set the [Flight Controller Orientation](#flight_controller_orientation) above.
    If not, you can also set it here.
    :::
 
@@ -53,7 +53,7 @@ You will be asked to place the vehicle in a level orientation while it captures 
    ![Level Horizon calibration](../../../assets/setup/sensor_level_horizon.jpg)
 
    ::: info
-   您应该已经设置了上述的[飞控方向](#flight_controller_orientation) 。
+   You should already have set the [Flight Controller Orientation](#flight_controller_orientation) above.
    If not, you can also set it here.
    :::
 
@@ -109,7 +109,7 @@ For example, the image below are at orientations: `ROTATION_NONE`, `ROTATION_YAW
 
 ![Flight controller yaw rotation](../../../assets/setup/flight_controller_yaw_rotation.png)
 
-确定使用的方向和指南针：
+To set the orientation(s) and compasses used:
 
 1. Select the **Sensor Settings** button.
 
